@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Diagram sentences</title>
   <link type="text/css" href="css/style.css" rel="stylesheet" charset="utf-8">
+  <link type="text/css" href="css/greek.css" rel="stylesheet" charset="utf-8">
   <link type="text/css" href="css/hebrew.css" rel="stylesheet" charset="utf-8">
   <link type="text/css" href="css/diagram.css" rel="stylesheet" charset="utf-8">
 </head>
@@ -14,12 +15,13 @@
   <div class="container">
     <h1>Diagram Sequences</h1>
     <div id="demo1" class="hebrew"></div>
+    <div id="demo2" class="greek"></div>
     <hr>
     <h2>Clauses</h2>
-    <div id="demo2"></div>
     <div id="demo3"></div>
     <div id="demo4"></div>
     <div id="demo5"></div>
+    <div id="demo6"></div>
     <hr>
 </div>
 </div>
@@ -32,11 +34,18 @@
       return {
         data: [
           {
-            title: 'Genesis 1:1',
+            title: 'John 3:2 (greek)',
             items: [
-              { name: 'בָּרָא', type: 'SUBJECT' },
-              { name: 'אֱלֹהִים', type: 'VERB' }
+              { name: 'οὗτος', type: 'SUBJECT' },
+              { name: 'ἦλθεν', type: 'VERB' }
             ]
+          },
+          {
+              title: 'Genesis 1:1 (hebrew)',
+              items: [
+                  { name: 'בָּרָא', type: 'SUBJECT' },
+                  { name: 'אֱלֹהִים', type: 'VERB' }
+              ]
           },
           {
             title: 'Diagram A (base line)',
@@ -103,6 +112,7 @@
       diagram(d3, '#demo3', this.data[2]);
       diagram(d3, '#demo4', this.data[3]);
       diagram(d3, '#demo5', this.data[4]);
+      diagram(d3, '#demo6', this.data[5]);
     }
   }).mount('#app')
 </script>

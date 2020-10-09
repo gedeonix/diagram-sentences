@@ -1,6 +1,6 @@
 # Gedeonix Diagram Sentences Lib (d3 + svg)
 
-Library for presenting sentence diagrams.
+Library for presenting sentence diagrams (very early alpha).
 
 ## Demo
  Simple demo in ./public/diagram.html file.
@@ -11,6 +11,8 @@ Library for presenting sentence diagrams.
 - https://en.wikipedia.org/wiki/Sentence_diagram
 
 ### SBL Fonts
+Fonts are not a direct part of the library, they were used only for the demo code.
+
 The project (non-profit) uses fonts from www.sbl-site.org
 under license
 > Fonts SBL fonts are made available without cost to individual scholars for non-profit use.
