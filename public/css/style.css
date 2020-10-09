@@ -1,0 +1,118 @@
+/* RESET */
+html {
+  box-sizing: border-box;
+  color: #606060;
+  background-color: #ffffff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+}
+
+[v-cloak] {
+  display: none;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+/* CONTAINER */
+.container {
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+
+@media screen and (min-width: 90em) {
+  .container {
+    max-width: 90em;
+  }
+}
+
+/* CONTENT */
+h1 {
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* GRID */
+.row,
+[class*='row-'],
+.col,
+[class*='col-'] {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* COMPONENTS */
+.textarea {
+  font-size: 4rem;
+  background-color: #fff8d7;
+  color: #6d5e5e;
+  width: 100%;
+  padding: 0.7rem 0.5rem;
+  -webkit-appearance: none;
+  width: 100%;
+}
+
+.key {
+  background-color: #ffffff;
+  border-radius: 5px;
+  border-width: 1px;
+  padding: 3px 3px;
+  font-size: 3rem;
+  width: 3rem;
+}
+
+.key:hover {
+  background-color: #d0d0d0;
+  cursor: pointer;
+}
+
+.key_name {
+  font-size: 0.8rem;
+}
+
+.key_info {
+    border-top: #606060 1px solid;
+    padding-top: 4px;
+    font-size: 0.8rem;
+}
+
+.key_space {
+  display: inline-block;
+  width: 3rem;
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  background-color: #fff8d7;
+  padding: 4px;
+  border: solid #2c3e50;
+  width: 6rem;
+  height: 6rem;
+  margin: 3px;
+}
+.box-char {
+  font-size: 4rem;
+}
+.box-code {
+  font-weight: bold;
+  margin-top: -1rem;
+  font-size: 1rem;
+}
+
+.text {
+  font-size: 2.5rem;
+}

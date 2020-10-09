@@ -1,0 +1,110 @@
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Diagram sentences</title>
+  <link type="text/css" href="css/style.css" rel="stylesheet" charset="utf-8">
+  <link type="text/css" href="css/hebrew.css" rel="stylesheet" charset="utf-8">
+  <link type="text/css" href="css/diagram.css" rel="stylesheet" charset="utf-8">
+</head>
+<body class="hebrew">
+<div id="app">
+  <div class="container">
+    <h1>Diagram Sequences</h1>
+    <div id="demo1" class="hebrew"></div>
+    <hr>
+    <h2>Clauses</h2>
+    <div id="demo2"></div>
+    <div id="demo3"></div>
+    <div id="demo4"></div>
+    <div id="demo5"></div>
+    <hr>
+</div>
+</div>
+<script src="https://d3js.org/d3.v6.min.js"></script>
+<script defer src="https://unpkg.com/vue@next"></script>
+<script type="module">
+  import { diagram, type } from '../src/diagram.js'
+  Vue.createApp({
+    data() {
+      return {
+        data: [
+          {
+            title: 'Genesis 1:1',
+            items: [
+              { name: 'בָּרָא', type: 'SUBJECT' },
+              { name: 'אֱלֹהִים', type: 'VERB' }
+            ]
+          },
+          {
+            title: 'Diagram A (base line)',
+            items: [
+              { name: 'subject', type: 'SUBJECT' },
+              { name: 'verb', type: 'VERB' }
+            ]
+          },
+          {
+            title: 'Diagram B',
+            items: [
+              { name: 'subject', type: 'SUBJECT' },
+              { name: 'verb', type: 'VERB' },
+              { name: 'direct object', type: 'DIRECT_OBJECT' },
+            ]
+          },
+          {
+            title: 'Diagram C',
+            items: [
+              { name: 'subject', type: 'SUBJECT' },
+              { name: 'linking verb', type: 'VERB' },
+              { name: 'predicate adj.', type: 'PREDICATE_ADJ' },
+            ]
+          },
+          {
+            title: 'Diagram D (modifiers)',
+            items: [
+              {
+                name: 'subject',
+                type: 'SUBJECT',
+                modifiers: [
+                  { name: 'modA', type: '...' },
+                  { name: 'modB', type: '...' },
+                  { name: 'modC', type: '...' }
+                ]
+              },
+              {
+                name: 'linking verb',
+                type: 'VERB',
+                modifiers: [
+                  { name: 'modD', type: '...' },
+                  { name: 'modE', type: '...' },
+                  { name: 'modF', type: '...' }
+                ]
+              },
+              {
+                name: 'predicate adj.',
+                type: 'DIRECT_OBJECT',
+                modifiers: [
+                  { name: 'modG', type: '...' },
+                  { name: 'modH', type: '...' },
+                  { name: 'modI', type: '...' }
+                ]
+              },
+            ]
+          }
+
+        ]
+      }
+    },
+    mounted() {
+      diagram(d3, '#demo1', this.data[0]);
+      diagram(d3, '#demo2', this.data[1]);
+      diagram(d3, '#demo3', this.data[2]);
+      diagram(d3, '#demo4', this.data[3]);
+      diagram(d3, '#demo5', this.data[4]);
+    }
+  }).mount('#app')
+</script>
+</body>
+</html>
