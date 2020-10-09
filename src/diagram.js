@@ -1,16 +1,10 @@
-export const type = {
+
+const type = {
   SUBJECT: 'SUBJECT',
   VERB: 'VERB',
   DIRECT_OBJECT: 'DIRECT_OBJECT',
   PREDICATE_ADJ: 'PREDICATE_ADJ'
 }
-const X2_OFFSET = 30
-const X_OFFSET = 40
-const Y_OFFSET = 60
-const Y2_OFFSET = 30
-
-const MARGIN = 60
-const FONT_OFFSET = 16
 
 /*
 export const type = {
@@ -34,7 +28,7 @@ export const type = {
 }
 */
 
-function drawTitle(parent, title) {
+function drawTitle(parent, gc, title) {
   const text = parent.append("text")
     //.attr("text-anchor", "start")
     .attr("x", 0)
@@ -58,19 +52,27 @@ function drawPath(svg, d) {
     .attr("d", d)
 }
 
-function drawClause(parent, x, y, name, type) {
+function drawClause(parent, gc, x, y, name, type) {
   const g = parent.append('g')
 
   const text = g.append("text")
     .attr("text-anchor", "start")
-    .attr("x", x + MARGIN)
-    .attr("y", y - FONT_OFFSET)
+    .attr("x", x + gc.MARGIN)
+    .attr("y", y - gc.FONT_OFFSET)
     //.attr("alignment-baseline", "baseline")
     //.attr("dy", ".35em")
     //.attr("text-anchor", "middle")
     //.style("font", "300 128px Helvetica Neue")
     .style('font-size', '3em')
     .text(name)
+
+    if(type === 'VERB') {
+        text.attr("fill", "red")
+    }
+    if(type === 'SUBJECT') {
+        text.attr("fill", "green")
+    }
+
 
   var bbox = text.node().getBBox();
 
@@ -84,7 +86,7 @@ function drawClause(parent, x, y, name, type) {
     .style("stroke", "#666")
     .style("stroke-width", "0");
 
-  let width = MARGIN + bbox.width + MARGIN
+  let width = gc.MARGIN + bbox.width + gc.MARGIN
   let x2 = x + width
 
   g.append("line")
@@ -100,38 +102,38 @@ function drawClause(parent, x, y, name, type) {
   return g.node().getBBox()
 }
 
-function drawDivideLineSubject(parent, x, y) {
+function drawDivideLineSubject(parent, gc, x, y) {
   parent.append("line")
     .attr("x1", x)
-    .attr("y1", y - Y_OFFSET)
+    .attr("y1", y - gc.Y_OFFSET)
     .attr("x2", x)
-    .attr("y2", y + Y2_OFFSET)
+    .attr("y2", y + gc.Y2_OFFSET)
     .style("stroke", "black")
     .style("stroke-width", 3)
 }
 
-function drawDivideLinePredicateAdj(parent, x, y) {
+function drawDivideLinePredicateAdj(parent, gc, x, y) {
   parent.append("line")
-    .attr("x1", x - X2_OFFSET)
-    .attr("y1", y - Y_OFFSET)
+    .attr("x1", x - gc.X2_OFFSET)
+    .attr("y1", y - gc.Y_OFFSET)
     .attr("x2", x)
     .attr("y2", y)
     .style("stroke", "black")
     .style("stroke-width", 3)
 }
 
-function drawDivideLineDefault(parent, x, y) {
+function drawDivideLineDefault(parent, gc, x, y) {
   parent.append("line")
     .attr("x1", x)
-    .attr("y1", y - Y_OFFSET)
+    .attr("y1", y - gc.Y_OFFSET)
     .attr("x2", x)
     .attr("y2", y)
     .style("stroke", "black")
     .style("stroke-width", 3)
 }
 
-function drawVerticalLine(parent, x, y) {
-  let y2 = y + Y_OFFSET + Y2_OFFSET
+function drawVerticalLine(parent, gc, x, y) {
+  let y2 = y + gc.Y_OFFSET + gc.Y2_OFFSET
   parent.append("line")
     .attr("x1", x)
     .attr("y1", y)
@@ -145,30 +147,30 @@ function drawVerticalLine(parent, x, y) {
   }
 }
 
-function drawModifer(parent, x, y, item) {
-  let pos = drawVerticalLine(parent, x, y)
-  return drawClause(parent, pos.x, pos.y, item.name, item.type)
+function drawModifer(parent, gc, x, y, item) {
+  let pos = drawVerticalLine(parent, gc, x, y)
+  return drawClause(parent, gc, pos.x, pos.y, item.name, item.type)
 }
 
-function drawItems(parent, x, y, items) {
+function drawItems(parent, gc, x, y, items) {
   let x_offset = x
   items.forEach((item, index, array ) => {
-    let box = drawClause(parent, x_offset, y, item.name, item.type)
+    let box = drawClause(parent, gc, x_offset, y, item.name, item.type)
     x_offset = x_offset + box.width
 
     // draw divide line
     if (index !== (array.length -1)) {
 
       if(item.type === 'SUBJECT') {
-        drawDivideLineSubject(parent, x_offset, y)
+        drawDivideLineSubject(parent, gc, x_offset, y)
       }
       else {
         let next = array[index + 1]
         if(next.type === 'PREDICATE_ADJ') {
-          drawDivideLinePredicateAdj(parent, x_offset, y)
+          drawDivideLinePredicateAdj(parent, gc, x_offset, y)
         }
         else {
-          drawDivideLineDefault(parent, x_offset, y)
+          drawDivideLineDefault(parent, gc, x_offset, y)
         }
       }
 
@@ -177,11 +179,11 @@ function drawItems(parent, x, y, items) {
     // draw modifiers
     if(item.modifiers !== undefined) {
 
-      let x = box.x + X2_OFFSET
-      let y = box.y + Y_OFFSET
+      let x = box.x + gc.X2_OFFSET
+      let y = box.y + gc.Y_OFFSET
       item.modifiers.forEach(modifier => {
-        let box2 = drawModifer(parent, x, y, modifier)
-        y = y + Y_OFFSET + Y2_OFFSET
+        let box2 = drawModifer(parent, gc, x, y, modifier)
+        y = y + gc.Y_OFFSET + gc.Y2_OFFSET
       })
     }
   })
@@ -475,6 +477,18 @@ var lineGraph = svg.append("path")
 
 export function diagram(d3, node, data) {
 
+    // grafix context
+    const gc = {
+        X2_OFFSET: 30,
+        X_OFFSET: 40,
+        Y_OFFSET: 60,
+        Y2_OFFSET: 30,
+        MARGIN: 60,
+        FONT_OFFSET: 16,
+        direction: data.direction === 'rtl' ? 'rtl': 'ltr'
+    }
+    console.log(`Draw ${data.title}, direction=${gc.direction}`)
+
   let margin = { top: 50, right: 5, bottom: 5, left: 5 }
   let width = 1000 - margin.left - margin.right
   let height = 500 - margin.top - margin.bottom
@@ -485,15 +499,15 @@ export function diagram(d3, node, data) {
     .attr("height", height + margin.top + margin.bottom)
 
   const parent = g2.append("g")
-    .attr('abc', '123')
-    .attr("transform",
-    "translate(" + margin.left + "," + margin.top + ")")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+    //.attr("transform", 'scale(1, 1)')
 
   //let g1 = drawClause(svg, x, y, 'subject', 'SUBJECT')
   //let g2 = drawClause(svg, g1.x + g1.width, y, 'verb', 'VERB')
+  //parent.attr("transform", 'translate(10px, 10px)')
 
-  drawTitle(parent, data.title)
-  let size = drawItems(parent, 0, 100, data.items)
+  drawTitle(parent, gc, data.title)
+  let size = drawItems(parent, gc, 0, 100, data.items)
 
   // console.log(size)
   // console.log(g1.node().getBBox());

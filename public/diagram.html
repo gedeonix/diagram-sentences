@@ -14,21 +14,22 @@
 <div id="app">
   <div class="container">
     <h1>Diagram Sequences</h1>
-    <div id="demo1" class="hebrew"></div>
-    <div id="demo2" class="greek"></div>
+    <div id="demo1" class="greek"></div>
+    <div id="demo2" class="hebrew" dir="ltr"></div>
     <hr>
     <h2>Clauses</h2>
     <div id="demo3"></div>
     <div id="demo4"></div>
     <div id="demo5"></div>
     <div id="demo6"></div>
+    <div id="demo7"></div>
     <hr>
 </div>
 </div>
 <script src="https://d3js.org/d3.v6.min.js"></script>
 <script defer src="https://unpkg.com/vue@next"></script>
 <script type="module">
-  import { diagram, type } from '../src/diagram.js'
+  import { diagram } from '../src/diagram.js'
   Vue.createApp({
     data() {
       return {
@@ -42,9 +43,10 @@
           },
           {
               title: 'Genesis 1:1 (hebrew)',
+              direction: 'rtl',
               items: [
-                  { name: 'בָּרָא', type: 'SUBJECT' },
-                  { name: 'אֱלֹהִים', type: 'VERB' }
+                  { name: 'בָּרָא', type: 'VERB' },
+                  { name: 'אֱלֹהִים', type: 'SUBJECT' }
               ]
           },
           {
@@ -101,8 +103,15 @@
                 ]
               },
             ]
+          },
+          {
+              title: 'Simple',
+              items: [
+                  { name: 'subject', type: 'SUBJECT' },
+                  { name: 'linking verb', type: 'VERB' },
+                  { name: 'predicate adj.', type: 'PREDICATE_ADJ' },
+              ]
           }
-
         ]
       }
     },
@@ -113,6 +122,7 @@
       diagram(d3, '#demo4', this.data[3]);
       diagram(d3, '#demo5', this.data[4]);
       diagram(d3, '#demo6', this.data[5]);
+      diagram(d3, '#demo6', this.data[6]);
     }
   }).mount('#app')
 </script>
