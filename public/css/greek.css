@@ -1,8 +1,8 @@
 @font-face {
-  font-family: 'SBL Hebrew';
+  font-family: 'SBL Greek';
   src: url('../font/SBL_grk.ttf');
 }
 
-.hebrew {
+.greek {
   font-family: 'SBL Greek', serif;
 }

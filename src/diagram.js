@@ -1,8 +1,8 @@
-function drawDot(parent, gc, x, y, color) {
+function drawDot(parent, gc, pos, color) {
     if(gc.debug) {
         parent.append("circle")
-            .attr("cx", x)
-            .attr("cy", y)
+            .attr("cx", pos.x)
+            .attr("cy", pos.y)
             .attr("r", 3)
             .attr("fill", color === undefined ? "#0000ff" : color)
     }
@@ -48,7 +48,7 @@ function drawClause(parent, gc, pos, name, type) {
     const g = parent.append('g')
 
     const text = g.append("text")
-        .attr("text-anchor", "start")
+        //.attr("text-anchor", "start")
         .attr("x", pos.x + gc.text.margin)
         .attr("y", pos.y - gc.text.font.offset)
         .style('font-size', gc.text.font.size)
@@ -58,11 +58,10 @@ function drawClause(parent, gc, pos, name, type) {
         text.attr("fill", gc.types[type])
     }
 
-    {
-        const bbox = text.node().getBBox();
-        let width = 2 * gc.text.margin + bbox.width
-        drawLine(g, gc, pos.x, pos.y, pos.x + width, pos.y)
-    }
+    const bbox = text.node().getBBox();
+    let width = 2 * gc.text.margin + bbox.width
+    drawLine(g, gc, pos.x, pos.y, pos.x + width, pos.y)
+
     return drawBBox(g, gc)
 }
 
@@ -77,7 +76,7 @@ function drawVerticalLine(parent, gc, pos) {
 
 function drawModifer(parent, gc, pos, item) {
     const g = parent.append('g')
-    drawDot(parent, gc, pos.x, pos.y, 'red')
+    drawDot(parent, gc, pos, 'red')
     let pos2 = drawVerticalLine(g, gc, pos)
     drawClause(g, gc, pos2, item.name, item.type);
     return drawBBox(g, gc)
@@ -103,7 +102,7 @@ function drawBaseline(parent, gc, x, y, items) {
         y: y
     }
 
-    drawDot(parent, gc, pos.x, pos.y)
+    drawDot(parent, gc, pos)
 
     items.forEach((item, index, array) => {
         let box = drawClause(g, gc, pos, item.name, item.type)
@@ -122,7 +121,7 @@ function drawBaseline(parent, gc, x, y, items) {
                 y: box.y + box.height
             }
 
-            drawDot(parent, gc, pos.x, pos.y, 'red') // base point
+            drawDot(parent, gc, pos, 'red') // base point
 
             item.modifiers.forEach(modifier => {
                 let pos2 = drawModifer(g, gc, pos, modifier)
@@ -161,7 +160,9 @@ export function diagram(d3, node, data) {
         },
         types: {
             VERB: 'red',
-            SUBJECT: 'green'
+            SUBJECT: 'green',
+            PREDICATE_ADJ: '#00ffff',
+            DIRECT_OBJECT: 'blue'
         },
         offset: {
             x: 30,

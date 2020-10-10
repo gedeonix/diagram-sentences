@@ -6,27 +6,3 @@
 .hebrew {
   font-family: 'SBL Hebrew', serif;
 }
-
-.hebrew_accent {
-  color: #0000ff;
-}
-
-.hebrew_point {
-  color: #ff6565;
-}
-
-.hebrew_letter {
-  color: #3dad3d;
-}
-
-.hebrew-red {
-  color: #c62c2c;
-}
-
-.hebrew-blue {
-  color: #28289a;
-}
-
-.hebrew-green {
-  color: #34a534;
-}
