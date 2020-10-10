@@ -2,7 +2,7 @@ function drawTitle(parent, gc, title) {
     return parent.append("text")
         .attr("x", 0)
         .attr("y", 0)
-        .style('font-size', '2em')
+        .style('font-size', gc.title.font.size)
         .text(title)
         .node().getBBox()
 }
@@ -24,7 +24,7 @@ function drawClause(parent, gc, pos, name, type) {
     const text = g.append("text")
         .attr("text-anchor", "start")
         .attr("x", pos.x + gc.text.margin)
-        .attr("y", pos.y - gc.FONT_OFFSET)
+        .attr("y", pos.y - gc.text.font.offset)
         .style('font-size', gc.text.font.size)
         .text(name)
 
@@ -40,107 +40,106 @@ function drawClause(parent, gc, pos, name, type) {
         .attr("width", bbox.width)
         .attr("height", bbox.height)
         .style("fill", "#ffff80")
-        .style("fill-opacity", ".3")
+        .style("fill-opacity", ".4")
         .style("stroke", "#666")
         .style("stroke-width", "0");
 
     let width = 2 * gc.text.margin + bbox.width
-    let x2 = pos.x + width
-
-    drawLine(g, gc, pos.x, pos.y, x2, pos.y)
+    drawLine(g, gc, pos.x, pos.y, pos.x + width, pos.y)
 
     return g.node().getBBox()
 }
 
-function drawVerticalLine(parent, gc, x, y) {
-    let y2 = y + gc.Y_OFFSET + gc.Y2_OFFSET
-    drawLine(parent, gc, x, y, x, y2)
+function drawVerticalLine(parent, gc, pos) {
+    let y2 = pos.y + gc.Y_OFFSET + gc.Y2_OFFSET
+    drawLine(parent, gc, pos.x, pos.y, pos.x, y2)
     return {
-        x: x,
+        x: pos.x,
         y: y2
     }
 }
 
-function drawModifer(parent, gc, x, y, item) {
-    let pos = drawVerticalLine(parent, gc, x, y)
-    return drawClause(parent, gc, pos, item.name, item.type)
+function drawModifer(parent, gc, pos, item) {
+    let pos2 = drawVerticalLine(parent, gc, pos)
+    return drawClause(parent, gc, pos2, item.name, item.type)
+}
+
+function drawSeparator(parent, gc, pos, item, next) {
+    if (item.type === 'SUBJECT') {
+        drawLine(parent, gc, pos.x, pos.y - gc.Y_OFFSET, pos.x, pos.y + gc.Y2_OFFSET)
+    } else {
+        if (next.type === 'PREDICATE_ADJ') {
+            drawLine(parent, gc, pos.x - gc.X2_OFFSET, pos.y - gc.Y_OFFSET, pos.x, pos.y)
+        } else {
+            drawLine(parent, gc, pos.x, pos.y - gc.Y_OFFSET, pos.x, pos.y) // default
+        }
+    }
 }
 
 function drawBaseline(parent, gc, x, y, items) {
-    let x_offset = x
+
+    let pos = {
+        x: x,
+        y: y
+    }
+
     items.forEach((item, index, array) => {
 
-        let pos = {
-            x: x_offset,
-            y: y
-        }
-
         let box = drawClause(parent, gc, pos, item.name, item.type)
-        x_offset = x_offset + box.width
+        pos.x = pos.x + box.width
 
-        // draw divide line
+        // draw separator
         if (index !== (array.length - 1)) {
-
-            if (item.type === 'SUBJECT') {
-                drawLine(parent, gc, x_offset, y - gc.Y_OFFSET, x_offset, y + gc.Y2_OFFSET)
-            } else {
-                let next = array[index + 1]
-                if (next.type === 'PREDICATE_ADJ') {
-                    drawLine(parent, gc, x_offset - gc.X2_OFFSET, y - gc.Y_OFFSET, x_offset, y)
-                } else {
-                    drawLine(parent, gc, x_offset, y - gc.Y_OFFSET, x_offset, y)
-                }
-            }
-
+            let next = array[index + 1]
+            drawSeparator(parent, gc, pos, item, next)
         }
 
         // draw modifiers
         if (item.modifiers !== undefined) {
-
-            let x = box.x + gc.X2_OFFSET
-            let y = box.y + gc.Y_OFFSET
+            let pos = {
+                x: box.x + gc.X2_OFFSET,
+                y: box.y + gc.Y2_OFFSET
+            }
             item.modifiers.forEach(modifier => {
-                let box2 = drawModifer(parent, gc, x, y, modifier)
-                y = y + gc.Y_OFFSET + gc.Y2_OFFSET
+                let box2 = drawModifer(parent, gc, pos, modifier)
+                pos.y = pos.y + gc.Y_OFFSET + gc.Y2_OFFSET
             })
         }
     })
 }
 
 export function diagram(d3, node, data) {
-
-    // grafix context
     const gc = {
+        direction: data.direction === 'rtl' ? 'rtl' : 'ltr',
         margin: {
             top: 50,
             right: 5,
             bottom: 5,
             left: 5
         },
-        direction: data.direction === 'rtl' ? 'rtl' : 'ltr',
         X2_OFFSET: 30,
-        X_OFFSET: 40,
         Y_OFFSET: 60,
         Y2_OFFSET: 30,
-        FONT_OFFSET: 16,
+        title: {
+            font: {
+                size: '2rem'
+            }
+        },
         line: {
-            color: 'red',
+            color: 'black',
             width: '1px'
         },
-        font: {
-
+        text: {
+            font: {
+              size: '2rem',
+              offset: '16'
+            },
+            margin: 60
         },
         types: {
             VERB: 'red',
             SUBJECT: 'green'
-        },
-        text: {
-            font: {
-              size: '2rem'
-            },
-            margin: 60
         }
-
     }
 
     let width = 1000 - gc.margin.left - gc.margin.right
