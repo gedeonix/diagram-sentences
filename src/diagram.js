@@ -1,31 +1,3 @@
-const type = {
-    SUBJECT: 'SUBJECT',
-    VERB: 'VERB',
-    DIRECT_OBJECT: 'DIRECT_OBJECT',
-    PREDICATE_ADJ: 'PREDICATE_ADJ'
-}
-
-/*
-export const type = {
-  ADJ: 'adjective',
-  ADP: 'adposition',
-  ADV: 'adverb',
-  AUX: 'auxiliary',
-  CCONJ: 'coordinating conjunction',
-  DET: 'determiner',
-  INTJ: 'interjection',
-  NOUN: 'noun',
-  NUM: 'numeral',
-  PART: 'particle',
-  PRON: 'pronoun',
-  PROPN: 'proper noun',
-  PUNCT: 'punctuation',
-  SCONJ: 'subordinating conjunction',
-  SYM: 'symbol',
-  VERB: 'verb',
-  X: 'other'
-}
-*/
 
 function drawTitle(parent, gc, title) {
     const text = parent.append("text")
@@ -46,21 +18,18 @@ function drawLine(parent, gc, x1, y1, x2, y2) {
         .style("stroke-width", gc.line.width)
 }
 
-function drawClause(parent, gc, x, y, name, type) {
+function drawClause(parent, gc, pos, name, type) {
     const g = parent.append('g')
 
     const text = g.append("text")
         .attr("text-anchor", "start")
-        .attr("x", x + gc.MARGIN)
-        .attr("y", y - gc.FONT_OFFSET)
+        .attr("x", pos.x + gc.MARGIN)
+        .attr("y", pos.y - gc.FONT_OFFSET)
         .style('font-size', '3em')
         .text(name)
 
-    if (type === 'VERB') {
-        text.attr("fill", "red")
-    }
-    if (type === 'SUBJECT') {
-        text.attr("fill", "green")
+    if(gc.types[type] !== undefined) {
+        text.attr("fill", gc.types[type] )
     }
 
     const bbox = text.node().getBBox();
@@ -76,13 +45,13 @@ function drawClause(parent, gc, x, y, name, type) {
         .style("stroke-width", "0");
 
     let width = gc.MARGIN + bbox.width + gc.MARGIN
-    let x2 = x + width
+    let x2 = pos.x + width
 
     g.append("line")
-        .attr("x1", x)
-        .attr("y1", y)
+        .attr("x1", pos.x)
+        .attr("y1", pos.y)
         .attr("x2", x2)
-        .attr("y2", y)
+        .attr("y2", pos.y)
         .style("stroke", gc.line.color)
         .style("stroke-width", gc.line.width)
 
@@ -118,13 +87,19 @@ function drawVerticalLine(parent, gc, x, y) {
 
 function drawModifer(parent, gc, x, y, item) {
     let pos = drawVerticalLine(parent, gc, x, y)
-    return drawClause(parent, gc, pos.x, pos.y, item.name, item.type)
+    return drawClause(parent, gc, pos, item.name, item.type)
 }
 
 function drawItems(parent, gc, x, y, items) {
     let x_offset = x
     items.forEach((item, index, array) => {
-        let box = drawClause(parent, gc, x_offset, y, item.name, item.type)
+
+        let pos = {
+            x: x_offset,
+            y: y
+        }
+
+        let box = drawClause(parent, gc, pos, item.name, item.type)
         x_offset = x_offset + box.width
 
         // draw divide line
@@ -184,9 +159,14 @@ export function diagram(d3, node, data) {
             color: 'red',
             width: '1px'
         },
-        type: [
+        font: {
 
-        ]
+        },
+        types: {
+            VERB: 'red',
+            SUBJECT: 'green'
+        }
+
     }
 
     let width = 1000 - gc.margin.left - gc.margin.right
