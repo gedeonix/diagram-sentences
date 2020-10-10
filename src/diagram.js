@@ -1,21 +1,21 @@
-
 function drawTitle(parent, gc, title) {
-    const text = parent.append("text")
-        //.attr("text-anchor", "start")
+    return parent.append("text")
         .attr("x", 0)
         .attr("y", 0)
         .style('font-size', '2em')
         .text(title)
+        .node().getBBox()
 }
 
 function drawLine(parent, gc, x1, y1, x2, y2) {
-    parent.append("line")
+    return parent.append("line")
         .attr("x1", x1)
         .attr("y1", y1)
         .attr("x2", x2)
         .attr("y2", y2)
         .style("stroke", gc.line.color)
         .style("stroke-width", gc.line.width)
+        .node().getBBox()
 }
 
 function drawClause(parent, gc, pos, name, type) {
@@ -23,9 +23,9 @@ function drawClause(parent, gc, pos, name, type) {
 
     const text = g.append("text")
         .attr("text-anchor", "start")
-        .attr("x", pos.x + gc.MARGIN)
+        .attr("x", pos.x + gc.text.margin)
         .attr("y", pos.y - gc.FONT_OFFSET)
-        .style('font-size', '3em')
+        .style('font-size', gc.text.font.size)
         .text(name)
 
     if(gc.types[type] !== undefined) {
@@ -34,7 +34,7 @@ function drawClause(parent, gc, pos, name, type) {
 
     const bbox = text.node().getBBox();
 
-    const rect = g.append("rect")
+    g.append("rect")
         .attr("x", bbox.x)
         .attr("y", bbox.y)
         .attr("width", bbox.width)
@@ -44,41 +44,17 @@ function drawClause(parent, gc, pos, name, type) {
         .style("stroke", "#666")
         .style("stroke-width", "0");
 
-    let width = gc.MARGIN + bbox.width + gc.MARGIN
+    let width = 2 * gc.text.margin + bbox.width
     let x2 = pos.x + width
 
-    g.append("line")
-        .attr("x1", pos.x)
-        .attr("y1", pos.y)
-        .attr("x2", x2)
-        .attr("y2", pos.y)
-        .style("stroke", gc.line.color)
-        .style("stroke-width", gc.line.width)
+    drawLine(g, gc, pos.x, pos.y, x2, pos.y)
 
     return g.node().getBBox()
 }
 
-function drawDivideLineSubject(parent, gc, x, y) {
-    drawLine(parent, gc, x, y - gc.Y_OFFSET, x, y + gc.Y2_OFFSET)
-}
-
-function drawDivideLinePredicateAdj(parent, gc, x, y) {
-    drawLine(parent, gc, x - gc.X2_OFFSET, y - gc.Y_OFFSET, x, y)
-}
-
-function drawDivideLineDefault(parent, gc, x, y) {
-    drawLine(parent, gc, x, y - gc.Y_OFFSET, x, y)
-}
-
 function drawVerticalLine(parent, gc, x, y) {
     let y2 = y + gc.Y_OFFSET + gc.Y2_OFFSET
-    parent.append("line")
-        .attr("x1", x)
-        .attr("y1", y)
-        .attr("x2", x)
-        .attr("y2", y2)
-        .style("stroke", gc.line.color)
-        .style("stroke-width", gc.line.width)
+    drawLine(parent, gc, x, y, x, y2)
     return {
         x: x,
         y: y2
@@ -90,7 +66,7 @@ function drawModifer(parent, gc, x, y, item) {
     return drawClause(parent, gc, pos, item.name, item.type)
 }
 
-function drawItems(parent, gc, x, y, items) {
+function drawBaseline(parent, gc, x, y, items) {
     let x_offset = x
     items.forEach((item, index, array) => {
 
@@ -106,13 +82,13 @@ function drawItems(parent, gc, x, y, items) {
         if (index !== (array.length - 1)) {
 
             if (item.type === 'SUBJECT') {
-                drawDivideLineSubject(parent, gc, x_offset, y)
+                drawLine(parent, gc, x_offset, y - gc.Y_OFFSET, x_offset, y + gc.Y2_OFFSET)
             } else {
                 let next = array[index + 1]
                 if (next.type === 'PREDICATE_ADJ') {
-                    drawDivideLinePredicateAdj(parent, gc, x_offset, y)
+                    drawLine(parent, gc, x_offset - gc.X2_OFFSET, y - gc.Y_OFFSET, x_offset, y)
                 } else {
-                    drawDivideLineDefault(parent, gc, x_offset, y)
+                    drawLine(parent, gc, x_offset, y - gc.Y_OFFSET, x_offset, y)
                 }
             }
 
@@ -129,13 +105,6 @@ function drawItems(parent, gc, x, y, items) {
             })
         }
     })
-
-    // size
-    return {
-        x: 100,
-        y: 200
-    }
-
 }
 
 export function diagram(d3, node, data) {
@@ -153,7 +122,6 @@ export function diagram(d3, node, data) {
         X_OFFSET: 40,
         Y_OFFSET: 60,
         Y2_OFFSET: 30,
-        MARGIN: 60,
         FONT_OFFSET: 16,
         line: {
             color: 'red',
@@ -165,6 +133,12 @@ export function diagram(d3, node, data) {
         types: {
             VERB: 'red',
             SUBJECT: 'green'
+        },
+        text: {
+            font: {
+              size: '2rem'
+            },
+            margin: 60
         }
 
     }
@@ -181,7 +155,8 @@ export function diagram(d3, node, data) {
         .attr("transform", "translate(" + gc.margin.left + "," + gc.margin.top + ")")
 
     drawTitle(parent, gc, data.title)
-    let size = drawItems(parent, gc, 0, 100, data.items)
+
+    let size = drawBaseline(parent, gc, 0, 100, data.items)
 
     let box = g2.node().getBBox()
 
